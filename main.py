@@ -11,85 +11,86 @@ from PIL import Image
 
 API_KEY = os.environ.get('API_KEY', "")
 bot = telebot.TeleBot(API_KEY)
-# 蓝奏云的 API URL 基础地址
+
+# Base URL for the Lanzou Cloud API
 API_BASE_URL = "https://v2.xxapi.cn/api/lanzou?url="
 
-# 定义主键盘
+# Define the main keyboard
 keyboard = types.ReplyKeyboardMarkup(row_width=4, resize_keyboard=True)
-# 添加按钮到键盘
-button1 = types.KeyboardButton('文本转二维码')
-button2 = types.KeyboardButton('base64编码')
-button3 = types.KeyboardButton('base64解码')
-button4 = types.KeyboardButton('随机密码生成')
-button5 = types.KeyboardButton('uuid生成器')
-button6 = types.KeyboardButton('必应每日壁纸')
-button7 = types.KeyboardButton('图片转ico图标')
-button8 = types.KeyboardButton('舔狗日记')
-button9 = types.KeyboardButton('网易云热评')
-button10 = types.KeyboardButton('蓝奏云解析')
-button11 = types.KeyboardButton('一言堂')
-button12 = types.KeyboardButton('关闭键盘')
+# Add buttons to the keyboard
+button1 = types.KeyboardButton('Text to QR Code')
+button2 = types.KeyboardButton('Base64 Encode')
+button3 = types.KeyboardButton('Base64 Decode')
+button4 = types.KeyboardButton('Random Password Generator')
+button5 = types.KeyboardButton('UUID Generator')
+button6 = types.KeyboardButton('Bing Daily Wallpaper')
+button7 = types.KeyboardButton('Image to ICO Icon')
+button8 = types.KeyboardButton('Diary of a Licker')
+button9 = types.KeyboardButton('Netease Cloud Hot Comments')
+button10 = types.KeyboardButton('Lanzou Cloud Parser')
+button11 = types.KeyboardButton('Hitokoto')
+button12 = types.KeyboardButton('Close Keyboard')
 
 keyboard.add(button1, button2, button3, button4, button5, button6, button7, button8, button9, button10, button11, button12)
 
-# /start 命令处理函数
+# /start command handler
 @bot.message_handler(commands=['start'])
 def handle_start(message):
     welcome_message = (
-        "欢迎使用工具盒子机器人!🎈\n\n"
-        "发送 /start 开始程序\n"
-        "发送 /menu 开启键盘\n"
-        "发送 /close 关闭键盘\n"
-        "发送 /help 获取命令"
+        "Welcome to the Toolbox Bot! 🎈\n\n"
+        "Send /start to start the program\n"
+        "Send /menu to open the keyboard\n"
+        "Send /close to close the keyboard\n"
+        "Send /help to get the commands"
     )
     bot.send_message(message.chat.id, welcome_message, reply_markup=keyboard)
 
 @bot.message_handler(commands=['help'])
 def handle_help(message):
     help_message = (
-        "/start - 开始程序\n"
-        "/menu - 开启键盘\n"
-        "/close - 关闭键盘\n"
-        "/help - 获取命令"
+        "/start - Start the program\n"
+        "/menu - Open the keyboard\n"
+        "/close - Close the keyboard\n"
+        "/help - Get the commands"
     )
     bot.send_message(message.chat.id, help_message, reply_markup=keyboard)
 
-# 文本消息处理函数
+# Text message handler
 @bot.message_handler(func=lambda message: True)
 def handle_text(message):
     if message.text == '/menu':
-        bot.send_message(message.chat.id, "已开启键盘", reply_markup=keyboard)
-    elif message.text == '关闭键盘' or message.text == '/close':
-        bot.send_message(message.chat.id, "已关闭键盘", reply_markup=types.ReplyKeyboardRemove())
-    elif message.text == '文本转二维码':
-        bot.send_message(message.chat.id, "请回复要转换成二维码的文本内容:")
+        bot.send_message(message.chat.id, "Keyboard enabled", reply_markup=keyboard)
+    elif message.text == 'Close Keyboard' or message.text == '/close':
+        bot.send_message(message.chat.id, "Keyboard closed", reply_markup=types.ReplyKeyboardRemove())
+    elif message.text == 'Text to QR Code':
+        bot.send_message(message.chat.id, "Please reply with the text you want to convert into a QR Code:")
         bot.register_next_step_handler(message, generate_qrcode)
-    elif message.text == 'base64编码':
-        bot.send_message(message.chat.id, "请回复要 Base64 编码的文本内容:")
+    elif message.text == 'Base64 Encode':
+        bot.send_message(message.chat.id, "Please reply with the text you want to Base64 encode:")
         bot.register_next_step_handler(message, encode_base64)
-    elif message.text == 'base64解码':
-        bot.send_message(message.chat.id, "请回复要解码的 Base64 文本内容:")
+    elif message.text == 'Base64 Decode':
+        bot.send_message(message.chat.id, "Please reply with the Base64 encoded text to decode:")
         bot.register_next_step_handler(message, decode_base64)
-    elif message.text == '随机密码生成':
+    elif message.text == 'Random Password Generator':
         bot.send_message(message.chat.id, generate_random_password())
-    elif message.text == 'uuid生成器':
+    elif message.text == 'UUID Generator':
         bot.send_message(message.chat.id, generate_uuid())
-    elif message.text == '必应每日壁纸':
+    elif message.text == 'Bing Daily Wallpaper':
         download_bing_wallpaper(message.chat.id)
-    elif message.text == '图片转ico图标':
-        bot.send_message(message.chat.id, "请回复一个 jpg 或 png 图片文件:")
+    elif message.text == 'Image to ICO Icon':
+        bot.send_message(message.chat.id, "Please reply with a JPG or PNG image file:")
         bot.register_next_step_handler(message, convert_to_ico)
-    elif message.text == '舔狗日记':
+    elif message.text == 'Diary of a Licker':
         send_request_data(message.chat.id, 'https://cloud.qqshabi.cn/api/tiangou/api.php')
-    elif message.text == '网易云热评':
+    elif message.text == 'Netease Cloud Hot Comments':
         send_request_data(message.chat.id, 'https://cloud.qqshabi.cn/api/comments/api.php?format=text')
-    elif message.text == '一言堂':
+    elif message.text == 'Hitokoto':
         send_request_data(message.chat.id, 'https://cloud.qqshabi.cn/api/hitokoto/hitokoto.php')
-    elif message.text == '蓝奏云解析':
-        bot.send_message(message.chat.id, "请发送蓝奏云链接进行解析：")
+    elif message.text == 'Lanzou Cloud Parser':
+        bot.send_message(message.chat.id, "Please send the Lanzou Cloud link to parse:")
         bot.register_next_step_handler(message, handle_lanzou_url)
 
-# 蓝奏云解析处理函数
+# Lanzou Cloud parsing handler
 def handle_lanzou_url(message):
     user_url = message.text.strip()
     api_url = API_BASE_URL + user_url
@@ -101,13 +102,13 @@ def handle_lanzou_url(message):
 
         if data.get("code") == 200 and "data" in data:
             download_url = data["data"]
-            bot.send_message(message.chat.id, f"解析成功！下载链接为：\n{download_url}")
+            bot.send_message(message.chat.id, f"Parsing successful! Download link:\n{download_url}")
         else:
-            bot.send_message(message.chat.id, "解析失败，返回的内容中没有包含下载链接。")
+            bot.send_message(message.chat.id, "Parsing failed. No download link found in the response.")
     except requests.exceptions.RequestException as e:
-        bot.send_message(message.chat.id, f"请求发生错误：{e}")
+        bot.send_message(message.chat.id, f"An error occurred during the request: {e}")
 
-# 工具函数
+# Utility functions
 def generate_qrcode(message):
     text = message.text
     img = qrcode.make(text)
@@ -126,7 +127,7 @@ def decode_base64(message):
         decoded_text = base64.b64decode(message.text).decode('utf-8')
         bot.send_message(message.chat.id, decoded_text)
     except Exception:
-        bot.send_message(message.chat.id, "解码失败，请确认输入内容是否为有效的 Base64 编码。")
+        bot.send_message(message.chat.id, "Decoding failed. Please ensure the input is valid Base64 encoded text.")
 
 def generate_random_password():
     characters = string.ascii_letters + string.digits + string.punctuation
@@ -150,7 +151,7 @@ def download_bing_wallpaper(chat_id):
             bot.send_photo(chat_id, photo)
         os.remove('bing_wallpaper.jpg')
     except Exception as e:
-        bot.send_message(chat_id, "下载壁纸时发生错误。")
+        bot.send_message(chat_id, "An error occurred while downloading the wallpaper.")
 
 def convert_to_ico(message):
     try:
@@ -168,9 +169,9 @@ def convert_to_ico(message):
             os.remove('temp_image.png')
             os.remove('icon.ico')
         else:
-            bot.send_message(message.chat.id, "请发送图片文件。")
+            bot.send_message(message.chat.id, "Please send an image file.")
     except Exception:
-        bot.send_message(message.chat.id, "处理图片时发生错误。")
+        bot.send_message(message.chat.id, "An error occurred while processing the image.")
 
 def send_request_data(chat_id, url):
     try:
@@ -178,9 +179,9 @@ def send_request_data(chat_id, url):
         if response.status_code == 200:
             bot.send_message(chat_id, response.text)
         else:
-            bot.send_message(chat_id, "获取数据失败，请稍后再试。")
+            bot.send_message(chat_id, "Failed to fetch data. Please try again later.")
     except Exception:
-        bot.send_message(chat_id, "请求发生错误。")
+        bot.send_message(chat_id, "An error occurred during the request.")
 
-# 启动机器人
+# Start the bot
 bot.polling()
