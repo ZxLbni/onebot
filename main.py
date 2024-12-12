@@ -9,7 +9,7 @@ import uuid
 import requests
 from PIL import Image
 
-API_KEY = os.environ.get('API_KEY', "")
+API_KEY = os.environ.get('API_KEY', "7727747884:AAFtLXgD1xJm8AUUKI-c2ZBT_DQq5r9KiM4")
 bot = telebot.TeleBot(API_KEY)
 
 # Base URL for the Lanzou Cloud API
